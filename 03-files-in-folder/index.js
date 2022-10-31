@@ -17,11 +17,3 @@ readdir(neededAdress, { withFileTypes: true }).then(data => data.forEach(file =>
         });
     }
 }));
-//     if (err) console.log(err);
-//     else {
-//         console.log("Current directory filenames:");
-//         files.forEach(file => {
-
-//         });
-//     }
-// });
