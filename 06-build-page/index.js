@@ -1,11 +1,15 @@
 const fs = require('fs');
+const {copy} = require('fs-extra');
 const {rmdir, rm} = require('fs/promises');
 const path = require('path');
 const projectDir = path.join(__dirname, '../06-build-page/project-dist');
 const styleWay = path.join(__dirname, "../06-build-page/styles");
 const cssWay = path.join(__dirname, '../06-build-page/project-dist/style.css');
 const indexWay = path.join(__dirname, '../06-build-page/project-dist/index.html');
-const assetsWay = path.join(__dirname, '../06-build-page/project-dist/assets');
+const assetsAddress = path.join(__dirname, '../06-build-page/assets');
+const assetsCopyWay = path.join(__dirname, '../06-build-page/project-dist/assets');
+// const assetsAddress = __dirname + '\\assets';
+// const assetsCopyWay = __dirname + '\\project-dist\\assets';
 
 
 
@@ -47,20 +51,20 @@ fs.access(path.join(indexWay), (err) => {
     });
 }
 
-function copyIndexDir() {
-    fs.readdir(path.join(directFolder), { withFileTypes: true }, (err, files) => {
-        if (err) console.log(err);
-        else {
-          files.forEach(file => {
-            fs.copyFile(path.join(directFolder, file.name), path.join(directCopy, file.name), (err)=>{
-                if(err){
-                    console.log(err);
-                }
-            });
-          });
-        }
-      });
-}
+// function copyIndexDir() {
+//     fs.readdir(path.join(directFolder), { withFileTypes: true }, (err, files) => {
+//         if (err) console.log(err);
+//         else {
+//           files.forEach(file => {
+//             fs.copyFile(path.join(directFolder, file.name), path.join(directCopy, file.name), (err)=>{
+//                 if(err){
+//                     console.log(err);
+//                 }
+//             });
+//           });
+//         }
+//       });
+// }
 
 // Make and copy style.css
 
@@ -98,22 +102,36 @@ function copyCssDir() {
         });
 }
 
-// Make assets folder
+// Make and copy assets folder
 
-async function makeAssetsFolder(){
-    fs.access(path.join(assetsWay), (err) => {
+function makeAssetsFolder(){
+    fs.access(path.join(assetsCopyWay), (err) => {
         if (err) {
-            fs.mkdir(path.join(assetsWay), { recursive: true }, (err) => {
+            fs.mkdir(path.join(assetsCopyWay), { recursive: true }, (err) => {
                 if (err) {
                     return console.error(err);
                 }
                 console.log('Directory assets created successfully!');
             });
-            // copyDir();
         } else {
             console.log('This assets directory has already exists');
         }
     });
+    }
+
+    function copyAssetsDir() {
+        fs.readdir(path.join(assetsAddress), { withFileTypes: true }, (err, files) => {
+            if (err) console.log(err);
+            else {
+              files.forEach(file => {
+                copy(path.join(assetsAddress, file.name), path.join(assetsCopyWay, file.name), (err)=>{
+                    if(err){
+                        console.log(err);
+                    }
+                });
+              });
+            }
+          });
     }
 
 
@@ -122,4 +140,5 @@ makeProjectDir();
 makeIndexDir();
 makeCssDir();
 makeAssetsFolder();
+copyAssetsDir();
 
