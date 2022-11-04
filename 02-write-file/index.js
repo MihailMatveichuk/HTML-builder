@@ -2,7 +2,6 @@
 var path = require('path');
 const fs = require('fs');
 const { stdin, stdout } = process;
-const keyWord = 'exit';
 
 fs.open(path.join(__dirname, '../02-write-file/file.txt'), 'w', (err) => {
   if(err) throw err;
