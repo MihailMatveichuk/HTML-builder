@@ -1,6 +1,6 @@
 const fs = require('fs');
 const {copy} = require('fs-extra');
-const {rmdir, rm} = require('fs/promises');
+const {rm, readFile, readdir} = require('fs/promises');
 const path = require('path');
 const projectDir = path.join(__dirname, '../06-build-page/project-dist');
 const styleWay = path.join(__dirname, "../06-build-page/styles");
@@ -8,13 +8,13 @@ const cssWay = path.join(__dirname, '../06-build-page/project-dist/style.css');
 const indexWay = path.join(__dirname, '../06-build-page/project-dist/index.html');
 const assetsAddress = path.join(__dirname, '../06-build-page/assets');
 const assetsCopyWay = path.join(__dirname, '../06-build-page/project-dist/assets');
-// const assetsAddress = __dirname + '\\assets';
-// const assetsCopyWay = __dirname + '\\project-dist\\assets';
+const templateWay = path.join(__dirname, '../06-build-page/template.html');
+const components = path.join(__dirname, '../06-build-page/components');
 
-
-
+// Make direction project-dist
 
 function makeProjectDir(){
+
     fs.access(path.join(projectDir), (err) => {
         if (err) {
             fs.mkdir(path.join(projectDir), { recursive: true }, (err) => {
@@ -23,24 +23,25 @@ function makeProjectDir(){
                 }
                 console.log('Directory created successfully!');
             });
-            // copyDir();
         } else {
             console.log('This directory has already exists');
         }
     });
+
 }
 
 // Make and copy index.html
 
 async function makeIndexDir(){
+
     await rm(indexWay, {force: true}); 
-fs.access(path.join(indexWay), (err) => {
-    if (err) {
-        fs.open(path.join(indexWay), 'w', (err) => {
-            if(err) throw err;
+    fs.access(path.join(indexWay), (err) => {
+        if (err) {
+            fs.open(path.join(indexWay), 'w', (err) => {
+                if(err) throw err;
             });
             console.log('File index.html created successfully');
-            // copyDir(neededWay, bundleWay);
+            copyIndexDir();
         } else {
             if(err){
                 console.error(err.message);
@@ -49,35 +50,34 @@ fs.access(path.join(indexWay), (err) => {
             console.log("File index.html have already exist");
         } 
     });
+
 }
 
-// function copyIndexDir() {
-//     fs.readdir(path.join(directFolder), { withFileTypes: true }, (err, files) => {
-//         if (err) console.log(err);
-//         else {
-//           files.forEach(file => {
-//             fs.copyFile(path.join(directFolder, file.name), path.join(directCopy, file.name), (err)=>{
-//                 if(err){
-//                     console.log(err);
-//                 }
-//             });
-//           });
-//         }
-//       });
-// }
+async function copyIndexDir() {
+
+    let template = await readFile(templateWay, 'utf8');
+    for (let filename of await readdir(components)) {
+        if (path.parse(filename).ext === '.html') {
+            let streamHTML = await readFile(path.join(components,filename), 'utf8');
+            let regTemp = `{{${path.parse(filename).name}}}`;
+            template = template.replace(regTemp, streamHTML);
+        }
+    }
+
+    fs.createWriteStream(projectDir + "/index.html").write(template, "UTF8");
+}
 
 // Make and copy style.css
 
 async function makeCssDir(){
-await rm(cssWay, {force: true}); 
-fs.access(path.join(cssWay), (err) => {
-    if (err) {
-        fs.open(path.join(cssWay), 'w', (err) => {
-            if(err) throw err;
-            });
+    await rm(cssWay, {force: true}); 
+    fs.access(path.join(cssWay), (err) => {
+        if (err) {
+            fs.open(path.join(cssWay), 'w', (err) => {
+                if(err) throw err;
+                });
             console.log('File style.css created successfully');
             copyCssDir();
-            // copyDir(neededWay, bundleWay);
         } else {
             if(err){
                 console.error(err.message);
@@ -89,6 +89,7 @@ fs.access(path.join(cssWay), (err) => {
 }
 
 function copyCssDir() {
+
     fs.readdir(styleWay, { withFileTypes: true }, (err, files) => {
         if (err) console.log(err);
         else {
@@ -99,12 +100,14 @@ function copyCssDir() {
               readableStream.pipe(writeableStream);
            });   
         }
-        });
+    });
+
 }
 
 // Make and copy assets folder
 
 function makeAssetsFolder(){
+
     fs.access(path.join(assetsCopyWay), (err) => {
         if (err) {
             fs.mkdir(path.join(assetsCopyWay), { recursive: true }, (err) => {
@@ -117,23 +120,25 @@ function makeAssetsFolder(){
             console.log('This assets directory has already exists');
         }
     });
-    }
 
-    function copyAssetsDir() {
-        fs.readdir(path.join(assetsAddress), { withFileTypes: true }, (err, files) => {
-            if (err) console.log(err);
-            else {
-              files.forEach(file => {
-                copy(path.join(assetsAddress, file.name), path.join(assetsCopyWay, file.name), (err)=>{
-                    if(err){
-                        console.log(err);
-                    }
-                });
-              });
-            }
-          });
-    }
+}
 
+function copyAssetsDir() {
+
+    fs.readdir(path.join(assetsAddress), { withFileTypes: true }, (err, files) => {
+        if (err) console.log(err);
+        else {
+            files.forEach(file => {
+            copy(path.join(assetsAddress, file.name), path.join(assetsCopyWay, file.name), (err)=>{
+                if(err){
+                    console.log(err);
+                }
+            });
+            });
+        }
+    });
+    
+}
 
 
 makeProjectDir();
