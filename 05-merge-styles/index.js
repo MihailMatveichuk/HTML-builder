@@ -7,6 +7,7 @@ const neededWay = path.join(__dirname, '../05-merge-styles/styles');
 const bundleWay = path.join(__dirname, '../05-merge-styles/project-dist/bundle.css');
 
 async function createCss(bundle){
+
    await rm(bundle, {force: true});
     fs.access(path.join(bundle), (err) => {
         if (err) {
@@ -22,6 +23,7 @@ async function createCss(bundle){
                 console.log("File have already exist");
             } 
         });
+        
     }
 
 function copyDir(styleWay, bundle){

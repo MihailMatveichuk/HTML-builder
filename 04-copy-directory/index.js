@@ -2,26 +2,27 @@ const fs = require('fs');
 const path = require('path');
 const directFolder = __dirname + '\\files';
 const directCopy = __dirname + '\\files-copy';
-// const wayCurrent = path.join(directFolder);
-// const wayCopy = path.join(directCopy);
 
 function checkExist(){
+
     fs.access(path.join(directCopy), (err) => {
         if (err) {
             fs.mkdir(path.join(directCopy), { recursive: true }, (err) => {
                 if (err) {
                     return console.error(err);
                 }
-                console.log('Directory created successfully!');
+            console.log('Directory created successfully!');
             });
             copyDir();
         } else {
             console.log('This directory has already exists');
         }
     });
+
 }
 
 function copyDir() {
+
     fs.readdir(path.join(directFolder), { withFileTypes: true }, (err, files) => {
         if (err) console.log(err);
         else {
@@ -33,7 +34,8 @@ function copyDir() {
             });
           });
         }
-      });
+    });
+
 }
 
 checkExist();

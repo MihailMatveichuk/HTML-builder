@@ -4,6 +4,7 @@ const path = require('path');
 const neededAddress = path.join(__dirname, '../03-files-in-folder/secret-folder');
 
 readdir(neededAddress, { withFileTypes: true }).then(data => data.forEach(file => {
+
     if (file.isFile()) {
         fs.stat(path.join(neededAddress, file.name), (error, stats) => {
             if (error) {
@@ -16,4 +17,5 @@ readdir(neededAddress, { withFileTypes: true }).then(data => data.forEach(file =
             }
         });
     }
+    
 }));
