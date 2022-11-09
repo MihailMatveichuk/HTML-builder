@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {copy} = require('fs-extra');
+// const {copy} = require('fs-extra');
 const {rm, readFile, readdir} = require('fs/promises');
 const path = require('path');
 const projectDir = path.join(__dirname, '../06-build-page/project-dist');
@@ -114,6 +114,7 @@ function makeAssetsFolder(){
                 if (err) {
                     return console.error(err);
                 }
+                copyAssetsDir();
                 console.log('Directory assets created successfully!');
             });
         } else {
@@ -124,12 +125,20 @@ function makeAssetsFolder(){
 }
 
 function copyAssetsDir() {
+    fs.mkdir(assetsAddress, {recursive: true}, function (error) {
+        if (error) {
+            return console.log(error.message);
+        }
+    });
 
     fs.readdir(path.join(assetsAddress), { withFileTypes: true }, (err, files) => {
         if (err) console.log(err);
         else {
             files.forEach(file => {
-            copy(path.join(assetsAddress, file.name), path.join(assetsCopyWay, file.name), (err)=>{
+                if(file.isDirectory){
+                    copyAssetsDir()
+                }
+             fs.copyFile(path.join(assetsAddress, file.name), path.join(assetsCopyWay, file.name), (err)=>{
                 if(err){
                     console.log(err);
                 }
@@ -145,5 +154,4 @@ makeProjectDir();
 makeIndexDir();
 makeCssDir();
 makeAssetsFolder();
-copyAssetsDir();
 
