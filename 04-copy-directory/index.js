@@ -1,23 +1,17 @@
 const fs = require('fs');
 const path = require('path');
-const directFolder = path.join(__dirname, '../04-copy-directory/files');
-const directCopy = path.join(__dirname, '../04-copy-directory/files-copy');
+let directFolder =  path.resolve(__dirname, 'files');
+let directCopy =  path.resolve(__dirname, 'files-copy');
 
-    fs.access(directCopy, (err) => {
+    fs.mkdir(directCopy, { recursive: true }, (err) => {
         if (err) {
-            fs.mkdir(directCopy, { recursive: true }, (err) => {
-                if (err) {
-                    return console.error(err);
-                }
-            console.log('Directory created successfully!');
-            });
-        } else {
-            
+            console.error(err);
         }
+       return;
     });
 
-    fs.readdir(directCopy, function (err, files) {
 
+    fs.readdir(directCopy, function (err, files) {
         files.forEach(file => {
           fs.unlink(path.join(directCopy, file), (err) => {
             if (err) {
@@ -26,18 +20,16 @@ const directCopy = path.join(__dirname, '../04-copy-directory/files-copy');
             }
           });
         });
-      });  
 
-    fs.readdir(directFolder, { withFileTypes: true }, (err, files) => {
-        if (err) console.log(err);
-        else {
+    fs.readdir(directFolder, (err, files) => {
           files.forEach(file => {
-            
-            fs.copyFile(path.join(directFolder, file.name), path.join(directCopy, file.name), (err)=>{
+            fs.copyFile(path.resolve(directFolder, file), path.resolve(directCopy, file), (err)=>{
                 if(err){
                     console.log(err);
                 }
+                return;
             });
           });
-        }
     });
+});
+
