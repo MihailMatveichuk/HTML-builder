@@ -11,7 +11,7 @@ const assetsCopyWay = path.join(__dirname, '../06-build-page/project-dist/assets
 const templateWay = path.join(__dirname, '../06-build-page/template.html');
 const components = path.join(__dirname, '../06-build-page/components');
 
-// Make direction project-dist
+
 
 function makeProjectDir(){
 
